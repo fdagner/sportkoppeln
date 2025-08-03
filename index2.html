@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sportunterricht Kopplungs-Optimierer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .input-section {
+            background: #f8faff;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-left: 5px solid #4facfe;
+        }
+        
+        .input-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 150px;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        
+        input, select {
+            padding: 10px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+        
+        .class-input {
+            display: grid;
+            grid-template-columns: 100px 80px 80px;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e1e8ed;
+        }
+        
+        .class-input input {
+            margin: 0;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-add {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 8px 20px;
+            font-size: 14px;
+        }
+        
+        .results {
+            margin-top: 30px;
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(240, 147, 251, 0.3);
+        }
+        
+        .result-card h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.5em;
+        }
+        
+        .coupling-list {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+        
+        .coupling-item {
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .coupling-details {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 8px;
+            min-width: 80px;
+        }
+        
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: 0.8em;
+            opacity: 0.9;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .input-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .class-input {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            
+            .coupling-details {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        #classTable td button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #4facfe;
+    color: white;
+}
+#classTable td button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+#classTable td button:nth-child(3) {
+    background-color: #ff6b6b;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏃‍♂️ Sportunterricht Kopplungs-Optimierer</h1>
+            <p>Automatische Berechnung optimaler Klassenkopplungen für den Sportunterricht</p>
+        </div>
+        
+        <div class="content">
+<div class="input-section">
+    <h2>📋 Grundeinstellungen</h2>
+    <p style="color: #666; font-style: italic;">
+        Hinweis: Klassenkoppeln dürfen maximal aus einem männlichen Lehrer oder 1-2 weiblichen Lehrern bestehen, oder aus einem weiblichen Lehrer und 1-2 männlichen Lehrern. Koppeln mit 3 oder 4 Lehrern sind begrenzt und werden separat angezeigt.
+    </p>
+    <div class="input-row">
+        <div class="input-group">
+            <label>Minimale Gruppengröße:</label>
+            <input type="number" id="minGroup" value="6" min="1">
+        </div>
+        <div class="input-group">
+            <label>Maximale Gruppengröße:</label>
+            <input type="number" id="maxGroup" value="32" min="1">
+        </div>
+        <div class="input-group">
+            <label>Maximale Lehrer pro Koppel:</label>
+            <input type="number" id="maxTeachersPerCoupling" value="3" min="1" max="4">
+        </div>
+        <div class="input-group" id="maxCouplings3TeachersContainer" style="display: block;">
+            <label>Max. Kopplungen mit 3 Lehrern:</label>
+            <input type="number" id="maxCouplings3Teachers" value="0" min="0">
+        </div>
+        <div class="input-group" id="maxCouplings4TeachersContainer" style="display: none;">
+            <label>Max. Kopplungen mit 4 Lehrern:</label>
+            <input type="number" id="maxCouplings4Teachers" value="0" min="0">
+        </div>
+    </div>
+    <div id="teacherCouplingHint" style="display: block; color: #4facfe; font-style: italic; margin-top: 10px;">
+        Im Normalfall werden 2 Lehrer je Koppel verplant, sie können zusätzliche Kapazitäten für Kopplungen mit 3 oder 4 Lehrern angeben.
+    </div>
+</div>
+            
+<div class="input-section">
+    <h2>👨‍🎓 Klassendaten</h2>
+    <table id="classTable">
+        <thead>
+            <tr>
+                <th>Klassenname</th>
+                <th>Jungen (♂)</th>
+                <th>Mädchen (♀)</th>
+                <th>Gesamt</th>
+                <th>Aktionen</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div style="margin-top: 20px;">
+        <h3>Neue Klasse hinzufügen</h3>
+        <div class="class-input">
+            <input type="text" id="className" placeholder="Klassenname (z.B. 5A)">
+            <input type="number" id="maleStudents" placeholder="Jungen" min="0">
+            <input type="number" id="femaleStudents" placeholder="Mädchen" min="0">
+        </div>
+        <button class="btn btn-add" onclick="addClass()">➕ Klasse hinzufügen</button>
+    </div>
+</div>
+            
+            <div style="text-align: center;">
+                <button class="btn" onclick="calculateOptimal()">🧮 Vollständigen Stundenplan erstellen</button>
+                <button class="btn" onclick="loadExampleData()">📝 Beispieldaten laden</button>
+            </div>
+            
+            <div id="results" class="results"></div>
+        </div>
+    </div>
+
+    <script>
+        let gradeGroups = {};
+        let calculationInProgress = false;
+    function addClass() {
+    const classNameInput = document.getElementById('className');
+    const maleStudentsInput = document.getElementById('maleStudents');
+    const femaleStudentsInput = document.getElementById('femaleStudents');
+    
+    const name = classNameInput.value.trim();
+    const male = parseInt(maleStudentsInput.value) || 0;
+    const female = parseInt(femaleStudentsInput.value) || 0;
+    
+    // Validierung
+    if (name === '' || isNaN(male) || isNaN(female) || male < 0 || female < 0) {
+        alert('Bitte geben Sie einen gültigen Klassennamen und nicht-negative Schülerzahlen ein.');
+        return;
+    }
+    if (!getGradeLevel(name)) {
+        alert('Der Klassenname muss eine Jahrgangsstufe enthalten (z.B. 5A, 6B).');
+        return;
+    }
+    
+    const classes = getClassData();
+    const classExists = classes.some(cls => cls.name.toLowerCase() === name.toLowerCase());
+    
+    if (classExists) {
+        alert('Eine Klasse mit diesem Namen existiert bereits.');
+        return;
+    }
+    
+    const total = male + female;
+    classes.push({ name, male, female, total });
+    saveClassData(classes);
+    renderClassTable(classes);
+    
+    classNameInput.value = '';
+    maleStudentsInput.value = '';
+    femaleStudentsInput.value = '';
+}
+
+function generateCompleteSchedule(gradeGroups, minGroup, maxGroup) {
+    const maxTeachersPerCoupling = parseInt(document.getElementById('maxTeachersPerCoupling').value) || 3;
+    const maxCouplings3Teachers = maxTeachersPerCoupling >= 3 ? parseInt(document.getElementById('maxCouplings3Teachers').value) || 0 : 0;
+    const maxCouplings4Teachers = maxTeachersPerCoupling === 4 ? parseInt(document.getElementById('maxCouplings4Teachers').value) || 0 : 0;
+    
+    let totalCouplings3Teachers = 0;
+    let totalCouplings4Teachers = 0;
+    const gradeSchedules = {};
+
+    const allGrades = Object.keys(gradeGroups).sort((a, b) => parseInt(a) - parseInt(b));
+
+    for (let grade of allGrades) {
+        // Wenn maxCouplings3Teachers erreicht ist, setze es für diese Jahrgangsstufe auf 0
+        const remainingCouplings3Teachers = maxCouplings3Teachers - totalCouplings3Teachers;
+        const result = findBestClassCoupling(
+            gradeGroups[grade], 
+            minGroup, 
+            maxGroup, 
+            maxTeachersPerCoupling, 
+            remainingCouplings3Teachers, // Verbleibende 3-Lehrer-Koppeln
+            maxCouplings4Teachers, 
+            totalCouplings3Teachers, 
+            totalCouplings4Teachers
+        );
+        gradeSchedules[grade] = result;
+
+        if (result.partition) {
+            // Aktualisiere globale Zähler
+            result.partition.forEach(coupling => {
+                const totalTeachers = coupling.maleTeachers + coupling.femaleTeachers;
+                if (totalTeachers === 3) totalCouplings3Teachers++;
+                if (totalTeachers === 4) totalCouplings4Teachers++;
+            });
+        }
+    }
+
+    return gradeSchedules;
+}
+
+// Toggle visibility of maxCouplings3Teachers and maxCouplings4Teachers based on maxTeachersPerCoupling
+function toggleCouplingInputs() {
+    const maxTeachersPerCoupling = parseInt(document.getElementById('maxTeachersPerCoupling').value) || 3;
+    const maxCouplings3TeachersContainer = document.getElementById('maxCouplings3TeachersContainer');
+    const maxCouplings4TeachersContainer = document.getElementById('maxCouplings4TeachersContainer');
+    const teacherCouplingHint = document.getElementById('teacherCouplingHint');
+
+    if (maxTeachersPerCoupling >= 3) {
+        maxCouplings3TeachersContainer.style.display = 'block';
+        teacherCouplingHint.style.display = 'block';
+    } else {
+        maxCouplings3TeachersContainer.style.display = 'none';
+        teacherCouplingHint.style.display = 'none';
+    }
+
+    if (maxTeachersPerCoupling === 4) {
+        maxCouplings4TeachersContainer.style.display = 'block';
+        teacherCouplingHint.style.display = 'block';
+    } else {
+        maxCouplings4TeachersContainer.style.display = 'none';
+    }
+}
+
+// Beim Ändern der Eingaben speichern
+document.getElementById('minGroup').addEventListener('change', () => {
+    localStorage.setItem('minGroup', document.getElementById('minGroup').value);
+});
+
+document.getElementById('maxGroup').addEventListener('change', () => {
+    localStorage.setItem('maxGroup', document.getElementById('maxGroup').value);
+});const minGroup = parseInt
+
+document.getElementById('maxTeachersPerCoupling').addEventListener('change', () => {
+    localStorage.setItem('maxTeachersPerCoupling', document.getElementById('maxTeachersPerCoupling').value);
+    toggleCouplingInputs();
+});
+
+document.getElementById('maxCouplings3Teachers').addEventListener('change', () => {
+    localStorage.setItem('maxCouplings3Teachers', document.getElementById('maxCouplings3Teachers').value);
+});
+
+document.getElementById('maxCouplings4Teachers').addEventListener('change', () => {
+    localStorage.setItem('maxCouplings4Teachers', document.getElementById('maxCouplings4Teachers').value);
+});
+
+
+
+// Werte aus localStorage beim Laden setzen
+window.addEventListener('DOMContentLoaded', () => {
+    const savedMinGroup = localStorage.getItem('minGroup');
+    const savedMaxGroup = localStorage.getItem('maxGroup');
+    const savedMaxTeachers = localStorage.getItem('maxTeachersPerCoupling');
+    const savedMaxCouplings3Teachers = localStorage.getItem('maxCouplings3Teachers');
+    const savedMaxCouplings4Teachers = localStorage.getItem('maxCouplings4Teachers');
+
+    if (savedMinGroup !== null) {
+        document.getElementById('minGroup').value = savedMinGroup;
+    }
+    if (savedMaxGroup !== null) {
+        document.getElementById('maxGroup').value = savedMaxGroup;
+    }
+    if (savedMaxTeachers !== null) {
+        document.getElementById('maxTeachersPerCoupling').value = savedMaxTeachers;
+    }
+    if (savedMaxCouplings3Teachers !== null) {
+        document.getElementById('maxCouplings3Teachers').value = savedMaxCouplings3Teachers;
+    }
+    if (savedMaxCouplings4Teachers !== null) {
+        document.getElementById('maxCouplings4Teachers').value = savedMaxCouplings4Teachers;
+    }
+
+    // Initialize visibility of coupling inputs
+    toggleCouplingInputs();
+
+    // Klassendaten laden
+    const savedClasses = loadClassData();
+    renderClassTable(savedClasses);
+});
+
+// Beim Ändern der Eingaben speichern
+document.getElementById('minGroup').addEventListener('change', () => {
+    localStorage.setItem('minGroup', document.getElementById('minGroup').value);
+});
+
+document.getElementById('maxGroup').addEventListener('change', () => {
+    localStorage.setItem('maxGroup', document.getElementById('maxGroup').value);
+});
+
+document.getElementById('maxTeachersPerCoupling').addEventListener('change', () => {
+    localStorage.setItem('maxTeachersPerCoupling', document.getElementById('maxTeachersPerCoupling').value);
+    toggleCouplingInputs();
+});
+
+document.getElementById('maxCouplings3Teachers').addEventListener('change', () => {
+    localStorage.setItem('maxCouplings3Teachers', document.getElementById('maxCouplings3Teachers').value);
+});
+
+document.getElementById('maxCouplings4Teachers').addEventListener('change', () => {
+    localStorage.setItem('maxCouplings4Teachers', document.getElementById('maxCouplings4Teachers').value);
+});
+
+// Werte aus localStorage beim Laden setzen
+window.addEventListener('DOMContentLoaded', () => {
+    const savedMinGroup = localStorage.getItem('minGroup');
+    const savedMaxGroup = localStorage.getItem('maxGroup');
+    const savedMaxTeachers = localStorage.getItem('maxTeachersPerCoupling');
+    const savedMaxCouplings3Teachers = localStorage.getItem('maxCouplings3Teachers');
+    const savedMaxCouplings4Teachers = localStorage.getItem('maxCouplings4Teachers');
+
+    if (savedMinGroup !== null) {
+        document.getElementById('minGroup').value = savedMinGroup;
+    }
+    if (savedMaxGroup !== null) {
+        document.getElementById('maxGroup').value = savedMaxGroup;
+    }
+    if (savedMaxTeachers !== null) {
+        document.getElementById('maxTeachersPerCoupling').value = savedMaxTeachers;
+    }
+    if (savedMaxCouplings3Teachers !== null) {
+        document.getElementById('maxCouplings3Teachers').value = savedMaxCouplings3Teachers;
+    }
+    if (savedMaxCouplings4Teachers !== null) {
+        document.getElementById('maxCouplings4Teachers').value = savedMaxCouplings4Teachers;
+    }
+
+    // Initialize visibility of coupling inputs
+    toggleCouplingInputs();
+
+    // Klassendaten laden
+    const savedClasses = loadClassData();
+    renderClassTable(savedClasses);
+});
+
+function loadExampleData() {
+    const exampleData = [
+        { name: '5A', male: 17, female: 13, total: 30 },
+        { name: '5B', male: 19, female: 11, total: 30 },
+        { name: '5C', male: 8, female: 20, total: 28 },
+        { name: '6A', male: 15, female: 15, total: 30 },
+        { name: '6B', male: 18, female: 12, total: 30 },
+        { name: '7A', male: 16, female: 14, total: 30 },
+        { name: '7B', male: 20, female: 10, total: 30 }
+    ];
+    saveClassData(exampleData); // Speichern im localStorage
+    renderClassTable(exampleData); // Tabelle rendern
+}
+
+function getClassData() {
+    return loadClassData();
+}
+
+        function getGradeLevel(className) {
+            // Extrahiert die Jahrgangsstufe aus dem Klassennamen (erste Zahl)
+            const match = className.match(/(\d+)/);
+            return match ? parseInt(match[1]) : null;
+        }
+
+function findOptimalScheduleForGrade(gradeClasses, minGroup, maxGroup, maxTeachersPerCoupling, maxCouplings3Teachers, maxCouplings4Teachers, totalCouplings3Teachers, totalCouplings4Teachers) {
+    const result = findBestClassCoupling(gradeClasses, minGroup, maxGroup, maxTeachersPerCoupling, maxCouplings3Teachers, maxCouplings4Teachers, totalCouplings3Teachers, totalCouplings4Teachers);
+    const bestClassCoupling = result.partition;
+
+    if (!bestClassCoupling) {
+        return { schedule: null, failureReason: result.failureReason };
+    }
+
+    const couplings = [];
+
+    bestClassCoupling.forEach((classCoupling, index) => {
+        const maleStudents = classCoupling.maleStudents || classCoupling.classes.reduce((sum, cls) => sum + (parseInt(cls.male) || 0), 0);
+        const femaleStudents = classCoupling.femaleStudents || classCoupling.classes.reduce((sum, cls) => sum + (parseInt(cls.female) || 0), 0);
+        const totalStudents = maleStudents + femaleStudents;
+
+        const coupling = {
+            id: index + 1,
+            classes: classCoupling.classes,
+            maleStudents: maleStudents,
+            femaleStudents: femaleStudents,
+            maleTeachers: classCoupling.maleTeachers,
+            femaleTeachers: classCoupling.femaleTeachers,
+            totalTeachers: classCoupling.maleTeachers + classCoupling.femaleTeachers,
+            totalStudents: totalStudents,
+            isValid: classCoupling.maleTeachers + classCoupling.femaleTeachers <= maxTeachersPerCoupling
+        };
+
+        couplings.push(coupling);
+    });
+
+    const totalTeachers = couplings.reduce((sum, c) => sum + c.totalTeachers, 0);
+
+    return {
+        schedule: {
+            couplings: couplings,
+            totalTeachers: totalTeachers
+        },
+        failureReason: ''
+    };
+}
+function calculateTeachersNeeded(studentCount, minGroup, maxGroup, maxTeachersPerCoupling, maxCouplings3Teachers, maxCouplings4Teachers, totalCouplings3Teachers, totalCouplings4Teachers) {
+    studentCount = parseInt(studentCount) || 0;
+    minGroup = parseInt(minGroup) || 12; // Angepasst auf neuen Standardwert
+    maxGroup = parseInt(maxGroup) || 32;
+    maxTeachersPerCoupling = parseInt(maxTeachersPerCoupling) || 3;
+    maxCouplings3Teachers = parseInt(maxCouplings3Teachers) || 0; // Verbleibende Kopplungen
+    maxCouplings4Teachers = parseInt(maxCouplings4Teachers) || 0;
+    totalCouplings3Teachers = parseInt(totalCouplings3Teachers) || 0;
+    totalCouplings4Teachers = parseInt(totalCouplings4Teachers) || 0;
+
+    if (studentCount === 0) return 0;
+
+    // Option 1: 1 Lehrer
+    if (studentCount >= minGroup && studentCount <= maxGroup) {
+        return 1;
+    }
+
+    // Option 2: 2 Lehrer
+    if (studentCount >= minGroup * 2 && studentCount / 2 >= minGroup && studentCount / 2 <= maxGroup && 2 <= maxTeachersPerCoupling) {
+        return 2;
+    }
+
+    // Option 3: 3 Lehrer (nur wenn verbleibende maxCouplings3Teachers > 0)
+    if (maxCouplings3Teachers > 0 && studentCount >= minGroup * 3 && studentCount / 3 >= minGroup && studentCount / 3 <= maxGroup && 3 <= maxTeachersPerCoupling) {
+        return 3;
+    }
+
+    // Option 4: 4 Lehrer (nur wenn maxCouplings4Teachers > totalCouplings4Teachers)
+    if (maxCouplings4Teachers > totalCouplings4Teachers && studentCount >= minGroup * 4 && studentCount / 4 >= minGroup && studentCount / 4 <= maxGroup && 4 <= maxTeachersPerCoupling) {
+        return 4;
+    }
+
+    // Keine gültige Lehrerzuweisung möglich
+    return 0;
+}
+
+function generateClassPartitions(classes) {
+    if (classes.length === 0) return [[]];
+    if (classes.length === 1) return [[[classes[0]]]];
+    
+    const result = [];
+    const first = classes[0];
+    const rest = classes.slice(1);
+    
+    // Alle Partitionen der restlichen Klassen
+    const restPartitions = generateClassPartitions(rest);
+    
+    for (let partition of restPartitions) {
+        // Erste Klasse als einzelne Gruppe hinzufügen
+        result.push([[first], ...partition]);
+        
+        // Erste Klasse zu jeder existierenden Gruppe hinzufügen (max 4 Klassen pro Gruppe)
+        for (let i = 0; i < partition.length && partition[i].length < 4; i++) {
+            const newPartition = partition.map((group, index) => 
+                index === i ? [...group, first] : group
+            );
+            result.push(newPartition);
+        }
+    }
+    
+    return result;
+}
+function findBestClassCoupling(classes, minGroup, maxGroup, maxTeachersPerCoupling, maxCouplings3Teachers, maxCouplings4Teachers, totalCouplings3Teachers, totalCouplings4Teachers) {
+    const allPartitions = generateClassPartitions(classes);
+    let bestPartition = null;
+    let minTeachers = Infinity;
+    let minVariance = Infinity;
+    let failureReason = '';
+
+    for (let partition of allPartitions) {
+        let totalTeachers = 0;
+        let couplings3Teachers = 0;
+        let couplings4Teachers = 0;
+        let isValid = true;
+        let tempPartition = [];
+        let partitionFailureReason = '';
+
+        for (let classCoupling of partition) {
+            const maleStudents = classCoupling.reduce((sum, cls) => sum + (parseInt(cls.male) || 0), 0);
+            const femaleStudents = classCoupling.reduce((sum, cls) => sum + (parseInt(cls.female) || 0), 0);
+
+            let maleTeachers = calculateTeachersNeeded(
+                maleStudents, 
+                minGroup, 
+                maxGroup, 
+                maxTeachersPerCoupling, 
+                maxCouplings3Teachers - couplings3Teachers, // Verbleibende 3-Lehrer-Koppeln
+                maxCouplings4Teachers - couplings4Teachers, 
+                totalCouplings3Teachers + couplings3Teachers, 
+                totalCouplings4Teachers + couplings4Teachers
+            );
+            let femaleTeachers = calculateTeachersNeeded(
+                femaleStudents, 
+                minGroup, 
+                maxGroup, 
+                maxTeachersPerCoupling, 
+                maxCouplings3Teachers - couplings3Teachers, // Verbleibende 3-Lehrer-Koppeln
+                maxCouplings4Teachers - couplings4Teachers, 
+                totalCouplings3Teachers + couplings3Teachers, 
+                totalCouplings4Teachers + couplings4Teachers
+            );
+            let totalTeachersInCoupling = maleTeachers + femaleTeachers;
+
+            // Check if the number of teachers exceeds the maximum per coupling
+            if (totalTeachersInCoupling > maxTeachersPerCoupling) {
+                partitionFailureReason = `Zu viele Lehrer (${totalTeachersInCoupling}) in Koppel ${classCoupling.map(cls => cls.name).join(' + ')}. Maximal ${maxTeachersPerCoupling} Lehrer erlaubt.`;
+                const splitResult = splitLargeCoupling(
+                    classCoupling, 
+                    minGroup, 
+                    maxGroup, 
+                    maxTeachersPerCoupling, 
+                    maxCouplings3Teachers - couplings3Teachers, 
+                    maxCouplings4Teachers - couplings4Teachers, 
+                    totalCouplings3Teachers + couplings3Teachers, 
+                    totalCouplings4Teachers + couplings4Teachers
+                );
+                if (!splitResult.couplings) {
+                    partitionFailureReason += ` ${splitResult.failureReason}`;
+                    isValid = false;
+                    break;
+                }
+                // Update teacher counts for split couplings
+                for (let splitCoupling of splitResult.couplings) {
+                    const splitTotalTeachers = splitCoupling.maleTeachers + splitCoupling.femaleTeachers;
+                    if (splitTotalTeachers === 3) couplings3Teachers++;
+                    if (splitTotalTeachers === 4) couplings4Teachers++;
+                    totalTeachers += splitTotalTeachers;
+                    tempPartition.push(splitCoupling);
+                }
+                continue;
+            }
+
+            // Check teacher configuration validity
+            const isTeacherConfigValid =
+                (maleTeachers >= 1 && maleTeachers <= 2 && femaleTeachers === 0) ||
+                (femaleTeachers >= 1 && femaleTeachers <= 2 && maleTeachers === 0) ||
+                (maleTeachers === 1 && femaleTeachers >= 1 && femaleTeachers <= 2) ||
+                (femaleTeachers === 1 && maleTeachers >= 1 && maleTeachers <= 2) ||
+                (maleTeachers === 2 && femaleTeachers === 2);
+
+            if (!isTeacherConfigValid) {
+                partitionFailureReason = `Ungültige Lehrerzuweisung in Koppel ${classCoupling.map(cls => cls.name).join(' + ')}: (${maleTeachers}♂, ${femaleTeachers}♀) nicht erlaubt.`;
+                const splitResult = splitLargeCoupling(
+                    classCoupling, 
+                    minGroup, 
+                    maxGroup, 
+                    maxTeachersPerCoupling, 
+                    maxCouplings3Teachers - couplings3Teachers, 
+                    maxCouplings4Teachers - couplings4Teachers, 
+                    totalCouplings3Teachers + couplings3Teachers, 
+                    totalCouplings4Teachers + couplings4Teachers
+                );
+                if (!splitResult.couplings) {
+                    partitionFailureReason += ` ${splitResult.failureReason}`;
+                    isValid = false;
+                    break;
+                }
+                // Update teacher counts for split couplings
+                for (let splitCoupling of splitResult.couplings) {
+                    const splitTotalTeachers = splitCoupling.maleTeachers + splitCoupling.femaleTeachers;
+                    if (splitTotalTeachers === 3) couplings3Teachers++;
+                    if (splitTotalTeachers === 4) couplings4Teachers++;
+                    totalTeachers += splitTotalTeachers;
+                    tempPartition.push(splitCoupling);
+                }
+                continue;
+            }
+
+            // Check if students are assigned teachers
+            if ((maleTeachers === 0 && maleStudents > 0) || (femaleTeachers === 0 && femaleStudents > 0)) {
+                partitionFailureReason = `Zu wenige Schüler in Koppel ${classCoupling.map(cls => cls.name).join(' + ')}: `;
+                if (maleTeachers === 0 && maleStudents > 0) {
+                    partitionFailureReason += `${maleStudents} männliche Schüler < ${minGroup}. `;
+                }
+                if (femaleTeachers === 0 && femaleStudents > 0) {
+                    partitionFailureReason += `${femaleStudents} weibliche Schüler < ${minGroup}. `;
+                }
+                const splitResult = splitLargeCoupling(
+                    classCoupling, 
+                    minGroup, 
+                    maxGroup, 
+                    maxTeachersPerCoupling, 
+                    maxCouplings3Teachers - couplings3Teachers, 
+                    maxCouplings4Teachers - couplings4Teachers, 
+                    totalCouplings3Teachers + couplings3Teachers, 
+                    totalCouplings4Teachers + couplings4Teachers
+                );
+                if (!splitResult.couplings) {
+                    partitionFailureReason += splitResult.failureReason;
+                    isValid = false;
+                    break;
+                }
+                // Update teacher counts for split couplings
+                for (let splitCoupling of splitResult.couplings) {
+                    const splitTotalTeachers = splitCoupling.maleTeachers + splitCoupling.femaleTeachers;
+                    if (splitTotalTeachers === 3) couplings3Teachers++;
+                    if (splitTotalTeachers === 4) couplings4Teachers++;
+                    totalTeachers += splitTotalTeachers;
+                    tempPartition.push(splitCoupling);
+                }
+                continue;
+            }
+
+            // Check global limits for 3 or 4 teachers
+            if (totalTeachersInCoupling === 3 && couplings3Teachers >= maxCouplings3Teachers) {
+                partitionFailureReason = `Max. Kopplungen mit 3 Lehrern (${maxCouplings3Teachers}) für diese Jahrgangsstufe erreicht in Koppel ${classCoupling.map(cls => cls.name).join(' + ')}.`;
+                isValid = false;
+                break;
+            }
+            if (totalTeachersInCoupling === 4 && couplings4Teachers >= maxCouplings4Teachers) {
+                partitionFailureReason = `Max. Kopplungen mit 4 Lehrern (${maxCouplings4Teachers}) erreicht in Koppel ${classCoupling.map(cls => cls.name).join(' + ')}.`;
+                isValid = false;
+                break;
+            }
+
+            if (totalTeachersInCoupling === 3) couplings3Teachers++;
+            if (totalTeachersInCoupling === 4) couplings4Teachers++;
+            totalTeachers += totalTeachersInCoupling;
+
+            tempPartition.push({
+                classes: classCoupling,
+                maleTeachers: maleTeachers,
+                femaleTeachers: femaleTeachers,
+                maleStudents: maleStudents,
+                femaleStudents: femaleStudents
+            });
+        }
+
+        // Check if global teacher counts exceed limits
+        if (couplings3Teachers > maxCouplings3Teachers || couplings4Teachers > maxCouplings4Teachers) {
+            partitionFailureReason = `Zu viele Kopplungen mit 3 Lehrern (${couplings3Teachers}/${maxCouplings3Teachers}) oder 4 Lehrern (${couplings4Teachers}/${maxCouplings4Teachers}) in dieser Jahrgangsstufe.`;
+            isValid = false;
+            continue;
+        }
+
+        // Check if all students are covered
+        const allStudentsCovered = tempPartition.reduce((sum, coupling) => 
+            sum + coupling.maleStudents + coupling.femaleStudents, 0) === 
+            classes.reduce((sum, cls) => sum + (parseInt(cls.male) || 0) + (parseInt(cls.female) || 0), 0);
+
+        // Check if all students have assigned teachers
+        let allStudentsAssigned = true;
+        for (let coupling of tempPartition) {
+            const maleStudents = coupling.maleStudents;
+            const femaleStudents = coupling.femaleStudents;
+            if ((maleStudents > 0 && coupling.maleTeachers === 0) || 
+                (femaleStudents > 0 && coupling.femaleTeachers === 0)) {
+                allStudentsAssigned = false;
+                partitionFailureReason += `Koppel ${coupling.classes.map(cls => cls.name).join(' + ')}: `;
+                if (maleStudents > 0 && coupling.maleTeachers === 0) {
+                    partitionFailureReason += `${maleStudents} männliche Schüler ohne Lehrer. `;
+                }
+                if (femaleStudents > 0 && coupling.femaleTeachers === 0) {
+                    partitionFailureReason += `${femaleStudents} weibliche Schüler ohne Lehrer. `;
+                }
+            }
+        }
+
+        if (isValid && totalTeachers > 0 && allStudentsCovered && allStudentsAssigned) {
+            const currentVariance = calculateVarianceForPartition(tempPartition);
+            if (totalTeachers < minTeachers || 
+                (totalTeachers === minTeachers && currentVariance < minVariance)) {
+                minTeachers = totalTeachers;
+                minVariance = currentVariance;
+                bestPartition = tempPartition;
+                failureReason = '';
+            }
+        } else if (!isValid || !allStudentsCovered || !allStudentsAssigned) {
+            if (!failureReason || totalTeachers > 0) {
+                failureReason = partitionFailureReason || 'Keine gültige Aufteilung möglich.';
+            }
+        }
+    }
+
+    return { partition: bestPartition, failureReason: bestPartition ? '' : failureReason };
+}
+function splitLargeCoupling(classCoupling, minGroup, maxGroup, maxTeachersPerCoupling, maxCouplings3Teachers, maxCouplings4Teachers, totalCouplings3Teachers, totalCouplings4Teachers) {
+    const sortedClasses = [...classCoupling].sort((a, b) => ((parseInt(b.male) || 0) + (parseInt(b.female) || 0)) - ((parseInt(a.male) || 0) + (parseInt(a.female) || 0)));
+    let remainingClasses = [...sortedClasses];
+    let splitCouplings = [];
+    let couplings3Teachers = 0;
+    let couplings4Teachers = 0;
+    let failureReason = '';
+
+    while (remainingClasses.length > 0) {
+        let bestSubCoupling = null;
+        let bestTeacherCount = Infinity;
+        let bestMaleTeachers = 0;
+        let bestFemaleTeachers = 0;
+        let bestMaleStudents = 0;
+        let bestFemaleStudents = 0;
+
+        const subCombinations = generateSubCombinations(remainingClasses, 1, Math.min(4, remainingClasses.length));
+        for (let subCombo of subCombinations) {
+            const maleStudents = subCombo.reduce((sum, cls) => sum + (parseInt(cls.male) || 0), 0);
+            const femaleStudents = subCombo.reduce((sum, cls) => sum + (parseInt(cls.female) || 0), 0);
+
+            const maleTeachers = calculateTeachersNeeded(
+                maleStudents, 
+                minGroup, 
+                maxGroup, 
+                maxTeachersPerCoupling, 
+                maxCouplings3Teachers - couplings3Teachers, 
+                maxCouplings4Teachers - couplings4Teachers, 
+                totalCouplings3Teachers + couplings3Teachers, 
+                totalCouplings4Teachers + couplings4Teachers
+            );
+            const femaleTeachers = calculateTeachersNeeded(
+                femaleStudents, 
+                minGroup, 
+                maxGroup, 
+                maxTeachersPerCoupling, 
+                maxCouplings3Teachers - couplings3Teachers, 
+                maxCouplings4Teachers - couplings4Teachers, 
+                totalCouplings3Teachers + couplings3Teachers, 
+                totalCouplings4Teachers + couplings4Teachers
+            );
+            const totalTeachers = maleTeachers + femaleTeachers;
+
+            // Skip combinations where students don't get teachers
+            if ((maleTeachers === 0 && maleStudents > 0) || (femaleTeachers === 0 && femaleStudents > 0)) {
+                continue;
+            }
+
+            // Skip if total teachers exceed maximum per coupling
+            if (totalTeachers > maxTeachersPerCoupling) {
+                continue;
+            }
+
+            // Skip if adding this coupling would exceed remaining 3 or 4 teacher limits
+            if ((totalTeachers === 3 && couplings3Teachers >= maxCouplings3Teachers) ||
+                (totalTeachers === 4 && couplings4Teachers >= maxCouplings4Teachers)) {
+                continue;
+            }
+
+            const isTeacherConfigValid =
+                (maleTeachers >= 1 && maleTeachers <= 2 && femaleTeachers === 0) ||
+                (femaleTeachers >= 1 && femaleTeachers <= 2 && maleTeachers === 0) ||
+                (maleTeachers === 1 && femaleTeachers >= 1 && femaleTeachers <= 2) ||
+                (femaleTeachers === 1 && maleTeachers >= 1 && maleTeachers <= 2) ||
+                (maleTeachers === 2 && femaleTeachers === 2);
+
+            if (isTeacherConfigValid && totalTeachers < bestTeacherCount && totalTeachers > 0) {
+                bestTeacherCount = totalTeachers;
+                bestSubCoupling = subCombo;
+                bestMaleTeachers = maleTeachers;
+                bestFemaleTeachers = femaleTeachers;
+                bestMaleStudents = maleStudents;
+                bestFemaleStudents = femaleStudents;
+            }
+        }
+
+        if (!bestSubCoupling) {
+            const maleStudents = remainingClasses.reduce((sum, cls) => sum + (parseInt(cls.male) || 0), 0);
+            const femaleStudents = remainingClasses.reduce((sum, cls) => sum + (parseInt(cls.female) || 0), 0);
+            const maleTeachers = calculateTeachersNeeded(
+                maleStudents, 
+                minGroup, 
+                maxGroup, 
+                maxTeachersPerCoupling, 
+                maxCouplings3Teachers - couplings3Teachers, 
+                maxCouplings4Teachers - couplings4Teachers, 
+                totalCouplings3Teachers + couplings3Teachers, 
+                totalCouplings4Teachers + couplings4Teachers
+            );
+            const femaleTeachers = calculateTeachersNeeded(
+                femaleStudents, 
+                minGroup, 
+                maxGroup, 
+                maxTeachersPerCoupling, 
+                maxCouplings3Teachers - couplings3Teachers, 
+                maxCouplings4Teachers - couplings4Teachers, 
+                totalCouplings3Teachers + couplings3Teachers, 
+                totalCouplings4Teachers + couplings4Teachers
+            );
+            const totalTeachers = maleTeachers + femaleTeachers;
+
+            const isTeacherConfigValid =
+                (maleTeachers >= 1 && maleTeachers <= 2 && femaleTeachers === 0) ||
+                (femaleTeachers >= 1 && femaleTeachers <= 2 && maleTeachers === 0) ||
+                (maleTeachers === 1 && femaleTeachers >= 1 && femaleTeachers <= 2) ||
+                (femaleTeachers === 1 && maleTeachers >= 1 && maleTeachers <= 2) ||
+                (maleTeachers === 2 && femaleTeachers === 2);
+
+            if (totalTeachers > 0 && isTeacherConfigValid && totalTeachers <= maxTeachersPerCoupling &&
+                (totalTeachers !== 3 || couplings3Teachers < maxCouplings3Teachers) &&
+                (totalTeachers !== 4 || couplings4Teachers < maxCouplings4Teachers)) {
+                splitCouplings.push({
+                    classes: [...remainingClasses],
+                    maleTeachers: maleTeachers,
+                    femaleTeachers: femaleTeachers,
+                    maleStudents: maleStudents,
+                    femaleStudents: femaleStudents
+                });
+                if (totalTeachers === 3) couplings3Teachers++;
+                if (totalTeachers === 4) couplings4Teachers++;
+                remainingClasses = [];
+            } else {
+                failureReason = `Keine gültige Aufteilung für ${remainingClasses.map(cls => cls.name).join(' + ')}: `;
+                if (maleTeachers === 0 && maleStudents > 0) {
+                    failureReason += `${maleStudents} männliche Schüler < ${minGroup}. `;
+                }
+                if (femaleTeachers === 0 && femaleStudents > 0) {
+                    failureReason += `${femaleStudents} weibliche Schüler < ${minGroup}. `;
+                }
+                if (totalTeachers > maxTeachersPerCoupling) {
+                    failureReason += `Zu viele Lehrer (${totalTeachers}). Maximal ${maxTeachersPerCoupling} Lehrer erlaubt.`;
+                }
+                if (totalTeachers === 3 && couplings3Teachers >= maxCouplings3Teachers) {
+                    failureReason += `Max. Kopplungen mit 3 Lehrern (${maxCouplings3Teachers}) für diese Jahrgangsstufe erreicht.`;
+                }
+                if (totalTeachers === 4 && couplings4Teachers >= maxCouplings4Teachers) {
+                    failureReason += `Max. Kopplungen mit 4 Lehrern (${maxCouplings4Teachers}) erreicht.`;
+                }
+                if (totalTeachers > 0 && !isTeacherConfigValid) {
+                    failureReason += `Ungültige Lehrerzuweisung (${maleTeachers}♂, ${femaleTeachers}♀). `;
+                }
+                return { couplings: null, failureReason };
+            }
+        } else {
+            splitCouplings.push({
+                classes: bestSubCoupling,
+                maleTeachers: bestMaleTeachers,
+                femaleTeachers: bestFemaleTeachers,
+                maleStudents: bestMaleStudents,
+                femaleStudents: bestFemaleStudents
+            });
+            if (bestTeacherCount === 3) couplings3Teachers++;
+            if (bestTeacherCount === 4) couplings4Teachers++;
+            remainingClasses = remainingClasses.filter(cls => !bestSubCoupling.includes(cls));
+        }
+    }
+
+    for (let coupling of splitCouplings) {
+        const maleStudents = coupling.maleStudents;
+        const femaleStudents = coupling.femaleStudents;
+        if ((maleStudents > 0 && coupling.maleTeachers === 0) || 
+            (femaleStudents > 0 && coupling.femaleTeachers === 0)) {
+            failureReason = `Koppel ${coupling.classes.map(cls => cls.name).join(' + ')}: `;
+            if (maleStudents > 0 && coupling.maleTeachers === 0) {
+                failureReason += `${maleStudents} männliche Schüler ohne Lehrer. `;
+            }
+            if (femaleStudents > 0 && coupling.femaleTeachers === 0) {
+                failureReason += `${femaleStudents} weibliche Schüler ohne Lehrer. `;
+            }
+            return { couplings: null, failureReason };
+        }
+    }
+
+    return { couplings: splitCouplings, failureReason: '' };
+}
+/**
+ * Berechnet die Varianz der effektiven Schülerzahlen pro Lehrergruppe für eine gegebene Partition.
+ * Eine niedrigere Varianz deutet auf ausgeglichenere Gruppen hin.
+ * @param {Array} partition - Eine Liste von Kopplungen, wobei jede Koppel Klassen, zugewiesene männliche und weibliche Lehrer enthält.
+ * @returns {number} Die Varianz der Schülerzahlen pro Lehrergruppe.
+ */
+function calculateVarianceForPartition(partition) {
+    const groupSizes = [];
+
+    for (const coupling of partition) {
+        // Die Schülerzahlen müssen aus den Klassen innerhalb der Koppel berechnet werden
+        const maleStudentsInCoupling = coupling.classes.reduce((sum, cls) => sum + cls.male, 0);
+        const femaleStudentsInCoupling = coupling.classes.reduce((sum, cls) => sum + cls.female, 0);
+
+        if (maleStudentsInCoupling > 0 && coupling.maleTeachers > 0) {
+            groupSizes.push(maleStudentsInCoupling / coupling.maleTeachers);
+        }
+        if (femaleStudentsInCoupling > 0 && coupling.femaleTeachers > 0) {
+            groupSizes.push(femaleStudentsInCoupling / coupling.femaleTeachers);
+        }
+    }
+
+    if (groupSizes.length === 0) {
+        return 0; // Keine Gruppen zur Varianzberechnung, z.B. wenn keine Schüler da sind
+    }
+
+    // Mittelwert berechnen
+    const mean = groupSizes.reduce((sum, size) => sum + size, 0) / groupSizes.length;
+
+    // Summe der quadrierten Abweichungen vom Mittelwert berechnen
+    const squaredDifferences = groupSizes.map(size => Math.pow(size - mean, 2));
+
+    // Varianz berechnen (Populationsvarianz, da wir alle Gruppen betrachten)
+    const variance = squaredDifferences.reduce((sum, diff) => sum + diff, 0) / groupSizes.length;
+
+    return variance;
+}
+
+
+function generateSubCombinations(classes, minSize, maxSize) {
+    const result = [];
+    const generate = (current, start, size) => {
+        if (current.length === size) {
+            result.push([...current]);
+            return;
+        }
+        for (let i = start; i < classes.length; i++) {
+            current.push(classes[i]);
+            generate(current, i + 1, size);
+            current.pop();
+        }
+    };
+
+    for (let size = minSize; size <= maxSize; size++) {
+        generate([], 0, size);
+    }
+    return result;
+}
+function calculateCoupling(combination, minGroup, maxGroup) {
+    const totalMale = combination.reduce((sum, cls) => sum + cls.male, 0);
+    const totalFemale = combination.reduce((sum, cls) => sum + cls.female, 0);
+    const totalStudents = totalMale + totalFemale;
+    
+    if (totalStudents < minGroup) return null;
+
+    let bestOption = null;
+    let minTeachers = Infinity;
+
+    for (let maleGroups = 1; maleGroups <= Math.ceil(totalMale / minGroup); maleGroups++) {
+        for (let femaleGroups = 1; femaleGroups <= Math.ceil(totalFemale / minGroup); femaleGroups++) {
+            
+            const malePerGroup = totalMale / maleGroups;
+            const femalePerGroup = totalFemale / femaleGroups;
+
+            if (
+                malePerGroup >= minGroup && malePerGroup <= maxGroup &&
+                femalePerGroup >= minGroup && femalePerGroup <= maxGroup
+            ) {
+                const totalTeachers = maleGroups + femaleGroups;
+
+                // Sonderfall: Symmetrische Kopplung (z. B. 2m + 2w => 2 Hallen statt 4)
+                let totalHalls;
+                if (maleGroups === femaleGroups) {
+                    totalHalls = maleGroups; // beide Gruppenpaare koppeln
+                } else {
+                    totalHalls = Math.max(maleGroups, femaleGroups); // Standardlogik
+                }
+
+                if (totalTeachers < minTeachers || 
+                    (totalTeachers === minTeachers && totalHalls < bestOption.totalHalls)) {
+                    minTeachers = totalTeachers;
+                    bestOption = {
+                        combination: combination,
+                        maleGroups: maleGroups,
+                        femaleGroups: femaleGroups,
+                        malePerGroup: Math.round(malePerGroup * 10) / 10,
+                        femalePerGroup: Math.round(femalePerGroup * 10) / 10,
+                        totalTeachers: totalTeachers,
+                        totalHalls: totalHalls,
+                        totalMale: totalMale,
+                        totalFemale: totalFemale,
+                        totalStudents: totalStudents,
+                        couplingType: maleGroups === femaleGroups ? "symmetrisch" : "asymmetrisch"
+                    };
+                }
+            }
+        }
+    }
+
+    return bestOption;
+}
+
+
+async function calculateOptimal() {
+    if (calculationInProgress) return;
+    calculationInProgress = true;
+
+    const resultsDiv = document.getElementById('results');
+    const classes = getClassData();
+    const minGroup = parseInt(document.getElementById('minGroup').value);
+    const maxGroup = parseInt(document.getElementById('maxGroup').value);
+    const maxTeachersPerCoupling = parseInt(document.getElementById('maxTeachersPerCoupling').value) || 3;
+
+    if (classes.length === 0) {
+        alert('Bitte geben Sie mindestens eine Klasse ein.');
+        calculationInProgress = false;
+        return;
+    }
+
+    resultsDiv.innerHTML = `
+        <div class="loading">
+            <div class="spinner"></div>
+            <div>Erstelle vollständigen Sportunterrichtsplan...</div>
+        </div>
+    `;
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    try {
+        gradeGroups = {};
+        classes.forEach(cls => {
+            const grade = getGradeLevel(cls.name);
+            if (grade !== null) {
+                if (!gradeGroups[grade]) {
+                    gradeGroups[grade] = [];
+                }
+                gradeGroups[grade].push(cls);
+            }
+        });
+
+        const gradeSchedules = {};
+
+        for (let grade in gradeGroups) {
+            const gradeClasses = gradeGroups[grade];
+            const result = findOptimalScheduleForGrade(gradeClasses, minGroup, maxGroup, maxTeachersPerCoupling);
+            gradeSchedules[grade] = result;
+        }
+
+        displayCompleteSchedule(gradeSchedules);
+
+    } catch (error) {
+        console.error('Fehler bei der Berechnung:', error);
+        resultsDiv.innerHTML = `
+            <div class="no-results">
+                <h3>Fehler bei der Berechnung</h3>
+                <p>Es ist ein Fehler aufgetreten: ${error.message}. Bitte überprüfen Sie Ihre Eingaben.</p>
+            </div>
+        `;
+    }
+
+    calculationInProgress = false;
+}
+function displayCompleteSchedule(gradeSchedules) {
+    const resultsDiv = document.getElementById('results');
+    const minGroup = parseInt(document.getElementById('minGroup').value) || 6;
+    const maxGroup = parseInt(document.getElementById('maxGroup').value) || 32;
+    const maxTeachersPerCoupling = parseInt(document.getElementById('maxTeachersPerCoupling').value) || 3;
+    const maxCouplings3Teachers = maxTeachersPerCoupling >= 3 ? parseInt(document.getElementById('maxCouplings3Teachers').value) || 1 : 0;
+    const maxCouplings4Teachers = maxTeachersPerCoupling === 4 ? parseInt(document.getElementById('maxCouplings4Teachers').value) || 0 : 0;
+    
+    let anyValidSchedule = false;
+    for (let grade in gradeSchedules) {
+        if (gradeSchedules[grade].schedule) {
+            anyValidSchedule = true;
+            break;
+        }
+    }
+    
+    if (!anyValidSchedule) {
+        resultsDiv.innerHTML = `
+            <div class="no-results">
+                <h3>Keine gültigen Stundenplanungen gefunden</h3>
+                <p>Mit den aktuellen Einstellungen (minGroup=${minGroup}, maxGroup=${maxGroup}, maxTeachersPerCoupling=${maxTeachersPerCoupling}, maxCouplings3Teachers=${maxCouplings3Teachers}${maxTeachersPerCoupling === 4 ? `, maxCouplings4Teachers=${maxCouplings4Teachers}` : ''}) kann kein vollständiger Stundenplan erstellt werden. 
+                Versuchen Sie, die minimale oder maximale Gruppengröße anzupassen oder die maximalen Kopplungen mit 3/4 Lehrern zu erhöhen.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = `<h2>📅 Vollständiger Sportunterrichtsplan</h2>`;
+    
+    let totalTeachers = 0;
+    let totalStudents = 0;
+    let totalCouplings = 0;
+    let totalCouplings3Teachers = 0;
+    let totalCouplings4Teachers = 0;
+    const allGrades = Object.keys(gradeSchedules).sort((a, b) => parseInt(a) - parseInt(b));
+
+    allGrades.forEach(grade => {
+        const result = gradeSchedules[grade];
+        const schedule = result.schedule;
+        const failureReason = result.failureReason;
+
+        if (!schedule) {
+            const problematicClasses = gradeGroups[grade]?.filter(cls => (parseInt(cls.male) || 0) < minGroup || (parseInt(cls.female) || 0) < minGroup) || [];
+            const problematicClassesText = problematicClasses.length > 0 
+                ? `Problematische Klassen: ${problematicClasses.map(cls => `${cls.name} (${cls.male}♂, ${cls.female}♀)`).join(', ')}. `
+                : '';
+            
+            html += `
+                <div style="margin: 30px 0; padding: 20px; background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%); border-radius: 15px; color: white;">
+                    <h3 style="margin: 0; font-size: 1.8em;">📚 Jahrgangsstufe ${grade}</h3>
+                    <p>⚠ Keine gültige Aufteilung gefunden: ${failureReason}</p>
+                    <p>${problematicClassesText}Versuchen Sie, die minimale Gruppengröße (minGroup=${minGroup}) zu reduzieren, die maximale Gruppengröße (maxGroup=${maxGroup}) zu erhöhen oder die maximalen Kopplungen mit 3/4 Lehrern (maxCouplings3Teachers=${maxCouplings3Teachers}${maxTeachersPerCoupling === 4 ? `, maxCouplings4Teachers=${maxCouplings4Teachers}` : ''}) anzupassen.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        totalTeachers += schedule.totalTeachers;
+        totalCouplings += schedule.couplings.length;
+        totalCouplings3Teachers += schedule.couplings.filter(c => c.maleTeachers + c.femaleTeachers === 3).length;
+        totalCouplings4Teachers += schedule.couplings.filter(c => c.maleTeachers + c.femaleTeachers === 4).length;
+        
+        const gradeStudents = schedule.couplings.reduce((sum, coupling) => sum + (coupling.totalStudents || 0), 0);
+        totalStudents += gradeStudents;
+        
+        const totalMaleTeachers = schedule.couplings.reduce((sum, coupling) => sum + (coupling.maleTeachers || 0), 0);
+        const totalFemaleTeachers = schedule.couplings.reduce((sum, coupling) => sum + (coupling.femaleTeachers || 0), 0);
+        
+        html += `
+            <div style="margin: 30px 0; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; color: white;">
+                <h3 style="margin: 0; font-size: 1.8em;">📚 Jahrgangsstufe ${grade}</h3>
+                <div style="margin-top: 10px; display: flex; gap: 20px; flex-wrap: wrap;">
+                    <div><strong>${schedule.couplings.length}</strong> Klassenkoppel(n)</div>
+                    <div><strong>${totalMaleTeachers}</strong> ♂ Lehrer</div>
+                    <div><strong>${totalFemaleTeachers}</strong> ♀ Lehrer</div>
+                    <div><strong>${gradeStudents}</strong> Schüler</div>
+                </div>
+            </div>
+        `;
+        
+        schedule.couplings.forEach((coupling, index) => {
+            const classNames = coupling.classes.map(cls => cls.name).join(' + ');
+            const isValidCoupling = coupling.isValid;
+            const warningStyle = isValidCoupling ? '' : 'border: 2px solid red;';
+            const backgroundStyle = isValidCoupling 
+                ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' 
+                : 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+
+            html += `
+                <div class="result-card" style="${warningStyle} background: ${backgroundStyle}">
+                    <h3>Klassenkoppel ${coupling.id}: ${classNames}</h3>
+                    ${!isValidCoupling ? '<p style="color: yellow; font-weight: bold;">⚠ Diese Koppel erfüllt nicht die Lehrerbedingungen!</p>' : ''}
+                    <div class="coupling-details">
+                        <div class="stat">
+                            <div class="stat-value">${coupling.totalTeachers || 0}</div>
+                            <div class="stat-label">Lehrer gesamt</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${coupling.maleTeachers || 0}</div>
+                            <div class="stat-label">♂ Lehrer</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${coupling.femaleTeachers || 0}</div>
+                            <div class="stat-label">♀ Lehrer</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${coupling.totalStudents || 0}</div>
+                            <div class="stat-label">Schüler gesamt</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${coupling.classes.length}</div>
+                            <div class="stat-label">Klassen</div>
+                        </div>
+                    </div>
+                    <div class="coupling-list">
+                        <div><strong>Aufteilung:</strong></div>
+                        <div>👨 ${coupling.maleStudents || 0} Jungen → ${coupling.maleTeachers || 0} Lehrer (à ${coupling.maleTeachers > 0 ? Math.round(coupling.maleStudents / coupling.maleTeachers * 10) / 10 : 0} Schüler/Lehrer)</div>
+                        <div>👩 ${coupling.femaleStudents || 0} Mädchen → ${coupling.femaleTeachers || 0} Lehrer (à ${coupling.femaleTeachers > 0 ? Math.round(coupling.femaleStudents / coupling.femaleTeachers * 10) / 10 : 0} Schüler/Lehrer)</div>
+                        <div style="margin-top: 10px;"><strong>Beteiligte Klassen:</strong></div>
+                        ${coupling.classes.map(cls => 
+                            `<div style="margin-left: 10px;">• ${cls.name}: ${parseInt(cls.male) || 0}♂ + ${parseInt(cls.female) || 0}♀ = ${(parseInt(cls.male) || 0) + (parseInt(cls.female) || 0)}</div>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+        });
+    });
+    
+    html = `
+        <div style="margin-bottom: 30px; padding: 25px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 15px; color: white; text-align: center;">
+            <h2 style="margin: 0 0 15px 0;">🎯 Gesamtübersicht</h2>
+            <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+                <div class="stat" style="background: rgba(255,255,255,0.2);">
+                    <div class="stat-value">${totalTeachers}</div>
+                    <div class="stat-label">Lehrer gesamt</div>
+                </div>
+                <div class="stat" style="background: rgba(255,255,255,0.2);">
+                    <div class="stat-value">${totalCouplings}</div>
+                    <div class="stat-label">Klassenkoppel</div>
+                </div>
+                ${maxTeachersPerCoupling >= 3 ? `
+                <div class="stat" style="background: rgba(255,255,255,0.2);">
+                    <div class="stat-value">${totalCouplings3Teachers}</div>
+                    <div class="stat-label">Koppel mit 3 Lehrern</div>
+                </div>
+                ` : ''}
+                ${maxTeachersPerCoupling === 4 ? `
+                <div class="stat" style="background: rgba(255,255,255,0.2);">
+                    <div class="stat-value">${totalCouplings4Teachers}</div>
+                    <div class="stat-label">Koppel mit 4 Lehrern</div>
+                </div>
+                ` : ''}
+                <div class="stat" style="background: rgba(255,255,255,0.2);">
+                    <div class="stat-value">${totalStudents}</div>
+                    <div class="stat-label">Schüler gesamt</div>
+                </div>
+                <div class="stat" style="background: rgba(255,255,255,0.2);">
+                    <div class="stat-value">${allGrades.length}</div>
+                    <div class="stat-label">Jahrgangsstufen</div>
+                </div>
+            </div>
+        </div>
+    ` + html;
+    
+    resultsDiv.innerHTML = html;
+}
+
+function adjustMinGroup(newMinGroup) {
+    document.getElementById('minGroup').value = newMinGroup;
+}
+
+// Funktion zum Speichern der Klassendaten im localStorage
+function saveClassData(classes) {
+    localStorage.setItem('classData', JSON.stringify(classes));
+}
+
+// Funktion zum Laden der Klassendaten aus dem localStorage
+function loadClassData() {
+    const savedData = localStorage.getItem('classData');
+    return savedData ? JSON.parse(savedData) : [];
+}
+
+function renderClassTable(classes) {
+    const tableBody = document.querySelector('#classTable tbody');
+    tableBody.innerHTML = ''; // Tabelle leeren
+
+    classes.forEach((cls, index) => {
+        const row = document.createElement('tr');
+
+        // Name-Zelle
+        const nameCell = document.createElement('td');
+        nameCell.contentEditable = true;
+        nameCell.textContent = cls.name;
+        nameCell.addEventListener('blur', () => updateClassData(index, 'name', nameCell.textContent));
+
+        // Jungen-Zelle
+        const maleCell = document.createElement('td');
+        maleCell.contentEditable = true;
+        maleCell.textContent = cls.male;
+        maleCell.addEventListener('blur', () => {
+            const val = parseInt(maleCell.textContent);
+            updateClassData(index, 'male', isNaN(val) ? 0 : val);
+            updateTotal(index); // aktualisiere Gesamtanzahl
+        });
+
+        // Mädchen-Zelle
+        const femaleCell = document.createElement('td');
+        femaleCell.contentEditable = true;
+        femaleCell.textContent = cls.female;
+        femaleCell.addEventListener('blur', () => {
+            const val = parseInt(femaleCell.textContent);
+            updateClassData(index, 'female', isNaN(val) ? 0 : val);
+            updateTotal(index); // aktualisiere Gesamtanzahl
+        });
+
+        // Gesamtanzahl (nicht bearbeitbar)
+        const totalCell = document.createElement('td');
+        totalCell.textContent = cls.total;
+
+        // Button-Zelle
+        const buttonCell = document.createElement('td');
+        buttonCell.innerHTML = `
+            <button onclick="moveClassUp(${index})" ${index === 0 ? 'disabled' : ''}>⬆</button>
+            <button onclick="moveClassDown(${index})" ${index === classes.length - 1 ? 'disabled' : ''}>⬇</button>
+            <button onclick="deleteClass(${index})">🗑</button>
+        `;
+
+        // Zusammenbauen
+        row.appendChild(nameCell);
+        row.appendChild(maleCell);
+        row.appendChild(femaleCell);
+        row.appendChild(totalCell);
+        row.appendChild(buttonCell);
+
+        tableBody.appendChild(row);
+    });
+}
+
+function updateClassData(index, field, value) {
+    const classes = loadClassData();
+    classes[index][field] = value;
+    saveClassData(classes);
+}
+
+function updateTotal(index) {
+    const classes = loadClassData();
+    const male = parseInt(classes[index].male) || 0;
+    const female = parseInt(classes[index].female) || 0;
+    classes[index].total = male + female;
+    saveClassData(classes);
+    renderClassTable(classes);
+}
+
+
+// Klasse löschen
+function deleteClass(index) {
+    const classes = getClassData();
+    classes.splice(index, 1); // Klasse an der Position index entfernen
+    saveClassData(classes); // Speichern im localStorage
+    renderClassTable(classes); // Tabelle neu rendern
+}
+
+// Klasse nach oben verschieben
+function moveClassUp(index) {
+    if (index === 0) return; // Bereits an erster Position
+    const classes = getClassData();
+    [classes[index - 1], classes[index]] = [classes[index], classes[index - 1]]; // Tauschen
+    saveClassData(classes); // Speichern im localStorage
+    renderClassTable(classes); // Tabelle neu rendern
+}
+
+// Klasse nach unten verschieben
+function moveClassDown(index) {
+    const classes = getClassData();
+    if (index === classes.length - 1) return; // Bereits an letzter Position
+    [classes[index], classes[index + 1]] = [classes[index + 1], classes[index]]; // Tauschen
+    saveClassData(classes); // Speichern im localStorage
+    renderClassTable(classes); // Tabelle neu rendern
+}
+
+// Beim Ändern der Gruppengrößen speichern
+document.getElementById('minGroup').addEventListener('change', () => {
+    localStorage.setItem('minGroup', document.getElementById('minGroup').value);
+});
+
+document.getElementById('maxGroup').addEventListener('change', () => {
+    localStorage.setItem('maxGroup', document.getElementById('maxGroup').value);
+});
+
+document.getElementById('maxTeachersPerCoupling').addEventListener('change', () => {
+    localStorage.setItem('maxTeachersPerCoupling', document.getElementById('maxTeachersPerCoupling').value);
+});
+
+// Beim Ändern der neuen Eingaben speichern
+document.getElementById('maxCouplings3Teachers').addEventListener('change', () => {
+    localStorage.setItem('maxCouplings3Teachers', document.getElementById('maxCouplings3Teachers').value);
+});
+
+document.getElementById('maxCouplings4Teachers').addEventListener('change', () => {
+    localStorage.setItem('maxCouplings4Teachers', document.getElementById('maxCouplings4Teachers').value);
+});
+
+// Werte aus localStorage beim Laden setzen
+window.addEventListener('DOMContentLoaded', () => {
+    const savedMinGroup = localStorage.getItem('minGroup');
+    const savedMaxGroup = localStorage.getItem('maxGroup');
+    const savedMaxTeachers = localStorage.getItem('maxTeachersPerCoupling');
+    const savedMaxCouplings3Teachers = localStorage.getItem('maxCouplings3Teachers');
+    const savedMaxCouplings4Teachers = localStorage.getItem('maxCouplings4Teachers');
+
+    if (savedMinGroup !== null) {
+        document.getElementById('minGroup').value = savedMinGroup;
+    }
+    if (savedMaxGroup !== null) {
+        document.getElementById('maxGroup').value = savedMaxGroup;
+    }
+    if (savedMaxTeachers !== null) {
+        document.getElementById('maxTeachersPerCoupling').value = savedMaxTeachers;
+    }
+    if (savedMaxCouplings3Teachers !== null) {
+        document.getElementById('maxCouplings3Teachers').value = savedMaxCouplings3Teachers;
+    }
+    if (savedMaxCouplings4Teachers !== null) {
+        document.getElementById('maxCouplings4Teachers').value = savedMaxCouplings4Teachers;
+    }
+
+    // Klassendaten laden
+    const savedClasses = loadClassData();
+    renderClassTable(savedClasses);
+});
+
+// Beim Laden der Seite die gespeicherten Daten rendern
+document.addEventListener('DOMContentLoaded', () => {
+    const classes = loadClassData();
+    if (classes.length === 0) {
+        loadExampleData(); // Lade Beispieldaten nur, wenn keine Daten im localStorage vorhanden sind
+    } else {
+        renderClassTable(classes); // Rendern der gespeicherten Daten
+    }
+});
+
+    </script>
+</body>
+</html>

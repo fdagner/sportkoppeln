@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Sportkoppel planen" />
+    <meta name="author" content="fdagner" />
+    <title>Sportkoppel-Planer</title>
+    <script src="js/script.js" defer></script>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+    <h1>
+        <svg xmlns="http://www.w3.org/2000/svg"
+            style="margin-bottom: -10px; width: 40px; fill: #007bff;margin-right: 5px;"
+            viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+            <path
+                d="M481.3 424.1L409.7 419.3C404.5 419 399.4 420.4 395.2 423.5C391 426.6 388 430.9 386.8 436L369.2 505.6C353.5 509.8 337 512 320 512C303 512 286.5 509.8 270.8 505.6L253.2 436C251.9 431 248.9 426.6 244.8 423.5C240.7 420.4 235.5 419 230.3 419.3L158.7 424.1C141.1 396.9 130.2 364.9 128.3 330.5L189 292.3C193.4 289.5 196.6 285.3 198.2 280.4C199.8 275.5 199.6 270.2 197.7 265.4L171 198.8C192 173.2 219.3 153 250.7 140.9L305.9 186.9C309.9 190.2 314.9 192 320 192C325.1 192 330.2 190.2 334.1 186.9L389.3 140.9C420.6 153 448 173.2 468.9 198.8L442.2 265.4C440.3 270.2 440.1 275.5 441.7 280.4C443.3 285.3 446.6 289.5 450.9 292.3L511.6 330.5C509.7 364.9 498.8 396.9 481.2 424.1zM320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576zM334.1 250.3C325.7 244.2 314.3 244.2 305.9 250.3L258 285C249.6 291.1 246.1 301.9 249.3 311.8L267.6 368.1C270.8 378 280 384.7 290.4 384.7L349.6 384.7C360 384.7 369.2 378 372.4 368.1L390.7 311.8C393.9 301.9 390.4 291.1 382 285L334.1 250.2z" />
+        </svg>Sportkoppel-Planer
+    </h1>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openTab('koppelTab')">
+            Start
+        </button>
+        <button class="tab-btn" onclick="openTab('inputTab')">
+            Klassendaten
+        </button>
+        <button class="tab-btn" onclick="openTab('settingsTab')">
+            Einstellungen
+        </button>
+        <button class="tab-btn" onclick="openTab('outputTab')">Koppeln</button>
+    </div>
+    <div id="koppelTab" class="tab-content">
+        <div class="input-section">
+            <h2>Start</h2>
+            <div class="info-box">
+                <div class="info-text">
+                    Der Sportkoppel-Planer unterstützt bei der Organisation des
+                    geschlechtergetrennten Sportunterrichts, indem er Klassen anhand
+                    ihrer Schülerzahlen automatisch in passende Gruppen (Koppeln)
+                    einteilt. Die Daten lassen sich einfach per Formular oder CSV-Datei
+                    eingeben. Über flexible Einstellungen – z. B. Gruppengrößen und
+                    verfügbare Hallen – kann die Planung an die örtlichen Gegebenheiten
+                    angepasst werden. Nach der automatischen Berechnung werden die
+                    Koppeln übersichtlich dargestellt. Per Drag & Drop lassen sich
+                    einzelne Klassen verschieben oder gezielt zusätzliche
+                    Hallenkapazitäten aktivieren, um die Planung bei Bedarf manuell zu
+                    optimieren.
+                </div>
+            </div>
+            <h3>Beispiel</h3>
+            <div class="image-wrapper">
+                <img src="img/koppeln.gif" alt="Beispielhafte Darstellung der Koppelberechnung" />
+            </div>
+        </div>
+    </div>
+    <!-- 🟢 Eingabe-Tab -->
+    <div id="inputTab" class="tab-content" style="display: none">
+        <div class="input-section">
+            <h2>Dateneingabe</h2>
+            <div class="info-box">
+                <div class="info-text">
+                    Sie können die Klassendaten über eine CSV-Datei einspielen.
+                    Alternativ können Sie Klassen manuell hinzufügen. Alle Daten können
+                    Sie später noch anpassen. Die Speicherung der Daten erfolgt lokal im
+                    Browser.<br /><br />Beispiel für eine CSV:<br />
+                    <code>Klasse;w;m<br />
+              5A;12;14<br />
+              6B;10;15</code><br /><br />
+                </div>
+            </div>
+            <br />
+            <div class="inputdata">
+                <h3>CSV-Import</h3>
+                <div id="upload-area">
+                    <p>Datei hierher ziehen oder klicken zum Hochladen</p>
+                    <input type="file" id="csvFile" accept=".csv" />
+                    <span id="fileName">Keine Datei gewählt</span>
+                </div><br>
+                <button onclick="uploadCSV()">CSV importieren</button>
+            </div>
+            <br /><br />
+            <div class="inputdata">
+                <h3>Manuelle Eingabe</h3>
+                <div style="display: none">
+                    <label>Jahrgangsstufe (optional):</label><br />
+                    <input type="text" id="yearGroup" placeholder="z.B. 5 (wird automatisch aus Klasse erkannt)"
+                        style="display: none" />
+                    <div class="info-box">
+                        <div class="info-text">
+                            Optional: Jahrgangsstufe eingeben, falls nicht automatisch
+                            erkannt werden soll.
+                        </div>
+                    </div>
+                </div>
+                <label>Klasse:</label><br />
+                <input type="text" id="className" />
+                <small>Geben Sie den Klassennamen ein, z.B. 5A oder 7B.</small><br />
+                <label>Weiblich:</label><br />
+                <input type="number" id="femaleCount" min="0" value="0" />
+                <small>Anzahl der weiblichen Schüler in dieser Klasse.</small><br />
+
+                <label>Männlich:</label><br />
+                <input type="number" id="maleCount" min="0" value="0" />
+                <small>Anzahl der männlichen Schüler in dieser Klasse.</small><br /><br>
+                <button onclick="addClass()">Klasse hinzufügen</button>
+            </div>
+
+            <h2>Klassen</h2>
+            <table id="classTable">
+                <thead>
+                    <tr>
+                        <th>Verschieben</th>
+                        <th>Jahrgangsstufe</th>
+                        <th>Klasse</th>
+                        <th>Weiblich</th>
+                        <th>Männlich</th>
+                        <th>Aktion</th>
+                    </tr>
+                </thead>
+                <tbody id="classTableBody"></tbody>
+            </table><br>
+            <button onclick="clearData()">Daten zurücksetzen</button>
+        </div>
+    </div>
+    <!-- ⚙️ Einstellungen-Tab -->
+    <div id="settingsTab" class="tab-content" style="display: none">
+        <div class="output-section">
+            <h2>Einstellungen</h2>
+            <div class="info-box">
+                <div class="info-text">
+                    Tragen Sie hier ein, wie viele Hallen maximal für eine einzelne
+                    Koppel genutzt werden sollen. Wenn beispielsweise insgesamt 4 Hallen
+                    verfügbar sind, ist es dennoch oft sinnvoller, für jede Koppel nur 2
+                    oder 3 Hallen zu reservieren. Zusätzliche Hallenkapazitäten, die nur
+                    zeitweise oder teilweise genutzt werden können, lassen sich später
+                    über manuelles Verschieben berücksichtigen.
+                </div>
+            </div>
+            <label for="halls">Verfügbare Hallen je Koppel:</label><br />
+            <input type="number" id="halls" min="2" value="2" /><br />
+
+            <label for="maxSize">Maximalgröße pro Koppel:</label><br />
+            <input type="number" id="maxSize" min="1" value="30" /><br />
+            <label for="minSize">Mindestgröße pro Koppel:</label><br />
+            <input type="number" id="minSize" min="1" value="12" /><br /><br>
+            <button onclick="saveSettings()">Einstellungen speichern</button>
+        </div>
+    </div>
+    <!-- 📊 Ausgabe-Tab -->
+    <div id="outputTab" class="tab-content" style="display: none">
+        <div class="output-section">
+            <h2>Ergebnis</h2>
+            <div class="info-box">
+                <div class="info-text">
+                    <strong>Hinweis:</strong> Sie können Klassen per Drag & Drop (nur
+                    mit einer Maus) zwischen den Koppeln verschieben, um individuelle
+                    Anpassungen vorzunehmen. Dabei können Sie z. B. Klassen
+                    zusammenlegen oder trennen, falls eine andere Koppel sinnvoll
+                    erscheint. Zusätzlich können Sie in der Tabelle für jede Koppel
+                    weitere Hallenkapazitäten erzwingen, falls z. B. Hallen zusätzlich
+                    zur Verfügung steht. Fertig geplante Koppeln können gesperrt werden.
+                </div>
+            </div>
+            <button onclick="calculateCouples()">Koppeln berechnen</button>
+            <div id="error" class="error"></div>
+            <div id="warning" class="warning"></div>
+            <div class="debug-info" id="debugInfo" style="display: none">
+                Debug: Keine Drag-Operationen gestartet
+            </div>
+            <table id="coupleTable">
+                <thead>
+                    <tr>
+                        <th>Koppel</th>
+                        <th>Weiblich (Schülerinnen / Hallen)</th>
+                        <th>Männlich (Schüler / Hallen)</th>
+                        <th>Sperren</th>
+                        <!-- Neue Spalte -->
+                    </tr>
+                </thead>
+                <tbody id="coupleTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

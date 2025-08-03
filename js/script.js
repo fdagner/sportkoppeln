@@ -1628,7 +1628,7 @@ function renderAllCouples() {
       function clearData() {
         classes = [];
         currentCouples = {};
-        settings = { maxSize: 30, minSize: 12, halls: 4 }; // Standardwerte zurücksetzen
+        settings = { maxSize: 30, minSize: 12, halls: 2 }; // Standardwerte zurücksetzen
         document.getElementById("maxSize").value = settings.maxSize;
         document.getElementById("minSize").value = settings.minSize;
         document.getElementById("halls").value = settings.halls;

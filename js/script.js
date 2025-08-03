@@ -1554,7 +1554,7 @@ function renderAllCouples() {
             tbody.appendChild(yearRow);
 
             renderCouples(year, couples, warnings);
-            allWarnings.push(...warnings.map((w) => `Jahrgangsstufe ${year}: ${w}`));
+            allWarnings.push(...warnings.map((w) => `${w}`));
         }
     });
 

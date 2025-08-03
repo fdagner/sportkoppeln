@@ -1624,6 +1624,44 @@ function renderAllCouples() {
         return true;
       }
 
+// Koppeln als CSV exportieren
+function exportCouplesToCSV() {
+    if (!Object.keys(currentCouples).length) {
+        document.getElementById("error").textContent = "Keine Koppeln zum Exportieren vorhanden!";
+        updateDebugInfo("Fehler: Keine Koppeln zum Exportieren vorhanden");
+        return;
+    }
+
+    let csvContent = "Jahrgangsstufe,Koppel,Klassen,Schülerinnen,Hallen (w),Schüler,Hallen (m),Gesperrt\n";
+    const yearGroups = [...new Set(classes.map((c) => c.yearGroup))];
+    let coupleCounter = 1; // Fortlaufende Zählung für Koppeln
+
+    yearGroups.forEach((year) => {
+        if (currentCouples[year]) {
+            currentCouples[year].forEach((couple) => {
+                if (couple.classes.length === 0) return; // Leere Koppeln überspringen
+                const classesList = couple.classes.join("+");
+                const row = `${year},Koppel ${coupleCounter},${classesList},${couple.female.count},${couple.female.halls},${couple.male.count},${couple.male.halls}\n`;
+                csvContent += row;
+                coupleCounter++; // Erhöhe die fortlaufende Nummer
+            });
+        }
+    });
+
+    // CSV-Datei erstellen und herunterladen
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "sportkoppeln_export.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    updateDebugInfo("Koppeln erfolgreich als CSV exportiert");
+}
+
       // Daten zurücksetzen
       function clearData() {
         classes = [];

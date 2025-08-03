@@ -74,6 +74,7 @@ sportkoppeln/
 ├── style.css        # CSS-Styles für Layout und visuelle Gestaltung
 ├── script.js        # JavaScript-Logik für Funktionalität und Datenverarbeitung
 └── README.md        # Diese Dokumentation
+```
 
 ## CSV-Format für Import
 
@@ -83,4 +84,4 @@ Die CSV-Datei für den Klassenimport muss folgendes Format haben:
 Klasse;w;m
 9A;10;12
 9B;15;10
-...
+```

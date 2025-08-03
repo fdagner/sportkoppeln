@@ -74,12 +74,12 @@
           row.setAttribute("draggable", "true"); // Zeile draggable machen
           row.classList.add("class-row"); // Klasse für Styling
           row.innerHTML = `
-            <td><span class="drag-handle">☰</span></td> <!-- Neue Spalte mit Drag-Symbol -->
+            <td><span class="drag-handle"><svg xmlns="http://www.w3.org/2000/svg" style="width: 20px;margin-bottom: -5px" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M342.6 73.4C330.1 60.9 309.8 60.9 297.3 73.4L233.3 137.4C224.1 146.6 221.4 160.3 226.4 172.3C231.4 184.3 243.1 192 256 192L288 192L288 288L192 288L192 256C192 243.1 184.2 231.4 172.2 226.4C160.2 221.4 146.5 224.2 137.3 233.3L73.3 297.3C60.8 309.8 60.8 330.1 73.3 342.6L137.3 406.6C146.5 415.8 160.2 418.5 172.2 413.5C184.2 408.5 192 396.9 192 384L192 352L288 352L288 448L256 448C243.1 448 231.4 455.8 226.4 467.8C221.4 479.8 224.2 493.5 233.3 502.7L297.3 566.7C309.8 579.2 330.1 579.2 342.6 566.7L406.6 502.7C415.8 493.5 418.5 479.8 413.5 467.8C408.5 455.8 396.9 448 384 448L352 448L352 352L448 352L448 384C448 396.9 455.8 408.6 467.8 413.6C479.8 418.6 493.5 415.8 502.7 406.7L566.7 342.7C579.2 330.2 579.2 309.9 566.7 297.4L502.7 233.4C493.5 224.2 479.8 221.5 467.8 226.5C455.8 231.5 448 243.1 448 256L448 288L352 288L352 192L384 192C396.9 192 408.6 184.2 413.6 172.2C418.6 160.2 415.8 146.5 406.7 137.3L342.7 73.3z"/></svg></span></td> <!-- Neue Spalte mit Drag-Symbol -->
             <td><input type="text" value="${cls.yearGroup}" class="edit-yearGroup" data-index="${index}"></td>
             <td><input type="text" value="${cls.className}" class="edit-className" data-index="${index}"></td>
             <td><input type="number" value="${cls.female}" min="0" class="edit-female" data-index="${index}"></td>
             <td><input type="number" value="${cls.male}" min="0" class="edit-male" data-index="${index}"></td>
-            <td><button onclick="deleteClass(${index})">Löschen</button></td>
+            <td style="text-align: center;"><button onclick="deleteClass(${index})"><svg xmlns="http://www.w3.org/2000/svg" style="width: 20px;margin-top: 4px;fill: #fff" viewBox="0 0 640 640"><!--!Font Awesome Free v7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M232.7 69.9C237.1 56.8 249.3 48 263.1 48L377 48C390.8 48 403 56.8 407.4 69.9L416 96L512 96C529.7 96 544 110.3 544 128C544 145.7 529.7 160 512 160L128 160C110.3 160 96 145.7 96 128C96 110.3 110.3 96 128 96L224 96L232.7 69.9zM128 208L512 208L512 512C512 547.3 483.3 576 448 576L192 576C156.7 576 128 547.3 128 512L128 208zM216 272C202.7 272 192 282.7 192 296L192 488C192 501.3 202.7 512 216 512C229.3 512 240 501.3 240 488L240 296C240 282.7 229.3 272 216 272zM320 272C306.7 272 296 282.7 296 296L296 488C296 501.3 306.7 512 320 512C333.3 512 344 501.3 344 488L344 296C344 282.7 333.3 272 320 272zM424 272C410.7 272 400 282.7 400 296L400 488C400 501.3 410.7 512 424 512C437.3 512 448 501.3 448 488L448 296C448 282.7 437.3 272 424 272z"/></svg></button></td>
         `;
           // Drag-and-Drop Event-Listener
           row.addEventListener("dragstart", handleClassDragStart);
@@ -911,6 +911,7 @@
 
         console.log("Ergebnis-Koppeln:", finalCouples); // Debug
         return { couples: finalCouples, warnings: finalWarnings, error: null };
+      
       }
 
       // Aktualisiere Koppeln nach Drag-and-Drop
@@ -1027,8 +1028,8 @@
             <td><button class="lock-btn ${couple.locked ? "locked" : ""}" 
                         onclick="toggleLock('${year}', ${index})">${
                 couple.locked
-                    ? '<svg xmlns="http://www.w3.org/2000/svg" style="width: 16px" viewBox="0 0 640 640"><path d="M256 160L256 224L384 224L384 160C384 124.7 355.3 96 320 96C284.7 96 256 124.7 256 160zM192 224L192 160C192 89.3 249.3 32 320 32C390.7 32 448 89.3 448 160L448 224C483.3 224 512 252.7 512 288L512 512C512 547.3 483.3 576 448 576L192 576C156.7 576 128 547.3 128 512L128 288C128 252.7 156.7 224 192 224z"/></svg>'
-                    : '<svg xmlns="http://www.w3.org/2000/svg" style="width: 16px" viewBox="0 0 640 640"><path d="M416 160C416 124.7 444.7 96 480 96C515.3 96 544 124.7 544 160L544 192C544 209.7 558.3 224 576 224C593.7 224 608 209.7 608 192L608 160C608 89.3 550.7 32 480 32C409.3 32 352 89.3 352 160L352 224L192 224C156.7 224 128 252.7 128 288L128 512C128 547.3 156.7 576 192 576L448 576C483.3 576 512 547.3 512 512L512 288C512 252.7 483.3 224 448 224L416 224L416 160z"/></svg>'
+                    ? '<svg xmlns="http://www.w3.org/2000/svg" style="width: 20px" viewBox="0 0 640 640"><path d="M256 160L256 224L384 224L384 160C384 124.7 355.3 96 320 96C284.7 96 256 124.7 256 160zM192 224L192 160C192 89.3 249.3 32 320 32C390.7 32 448 89.3 448 160L448 224C483.3 224 512 252.7 512 288L512 512C512 547.3 483.3 576 448 576L192 576C156.7 576 128 547.3 128 512L128 288C128 252.7 156.7 224 192 224z"/></svg>'
+                    : '<svg xmlns="http://www.w3.org/2000/svg" style="width: 20px" viewBox="0 0 640 640"><path d="M416 160C416 124.7 444.7 96 480 96C515.3 96 544 124.7 544 160L544 192C544 209.7 558.3 224 576 224C593.7 224 608 209.7 608 192L608 160C608 89.3 550.7 32 480 32C409.3 32 352 89.3 352 160L352 224L192 224C156.7 224 128 252.7 128 288L128 512C128 547.3 156.7 576 192 576L448 576C483.3 576 512 547.3 512 512L512 288C512 252.7 483.3 224 448 224L416 224L416 160z"/></svg>'
             }</button></td>
         `;
         tbody.appendChild(row);
@@ -1045,9 +1046,9 @@
         newRow.addEventListener("dragenter", handleDragEnter);
         newRow.addEventListener("dragleave", handleDragLeave);
         newRow.innerHTML = `
-            <td class="drop-zone">Neue Koppel</td>
-            <td>0 Schülerinnen / 0 Hallen</td>
-            <td>0 Schüler / 0 Hallen</td>
+            <td class="drop-zone" style="color: #ccc">Neue Koppel</td>
+            <td style="color: #ccc">...</td>
+            <td style="color: #ccc">...</td>
             <td></td>
         `;
         tbody.appendChild(newRow);
@@ -1474,7 +1475,7 @@ function calculateCouples() {
             warningElement.appendChild(warningDiv);
         });
     }
-
+    alert("Koppeln berechnet und verteilt");
     updateDebugInfo("Koppeln erfolgreich berechnet für alle Jahrgangsstufen");
     saveToLocalStorage();
 }
@@ -1573,6 +1574,7 @@ function renderAllCouples() {
 
     updateDebugInfo("Alle Koppeln neu gerendert");
     saveToLocalStorage();
+   
 }
 
       function openTab(tabId) {

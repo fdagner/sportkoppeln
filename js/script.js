@@ -1065,7 +1065,7 @@
     const warningElement = document.getElementById("warning");
     warnings.forEach((warning) => {
         const warningDiv = document.createElement("div");
-        warningDiv.textContent = `Jahrgangsstufe ${year}: ${warning}`;
+        warningDiv.textContent = `${warning}`;
         warningElement.appendChild(warningDiv);
     });
 

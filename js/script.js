@@ -204,8 +204,6 @@
           `Klasse von Index ${sourceIndex} nach Index ${targetIndex} verschoben`
         );
 
-        // Koppeln neu berechnen
-        calculateCouples();
 
         // Zurücksetzen der globalen Drag-Daten
         classDragData = null;

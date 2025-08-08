@@ -1114,12 +1114,16 @@
         }
       }
 
+      
+
       // Verbesserte Drag-and-Drop-Handler
       function handleMouseDown(e) {
         updateDebugInfo(
           `Maus gedrückt auf: ${e.target.getAttribute("data-class")}`
         );
       }
+
+      let currentDropZone = null;
 
       function handleDragStart(e) {
         const element = e.target;
@@ -1185,20 +1189,35 @@
         updateDebugInfo("Drag beendet");
       }
 
-      function handleDragEnter(e) {
-        e.preventDefault();
-        if (e.target.closest(".drop-zone")) {
-          e.target.closest(".drop-zone").classList.add("drag-over");
-        }
-      }
+function handleDragEnter(e) {
+  e.preventDefault();
+  const dropZone = e.target.closest(".drop-zone");
 
-      function handleDragLeave(e) {
-        e.preventDefault();
-        // Nur entfernen, wenn wir die Drop-Zone wirklich verlassen
-        if (!e.currentTarget.contains(e.relatedTarget)) {
-          e.currentTarget.classList.remove("drag-over");
-        }
+  if (dropZone && !dropZone.classList.contains("locked")) {
+    // Entferne die Hervorhebung von allen anderen Drop-Zones
+    document.querySelectorAll(".drop-zone.drag-over").forEach((zone) => {
+      if (zone !== dropZone) {
+        zone.classList.remove("drag-over");
       }
+    });
+    // Setze die neue Drop-Zone als aktuell und hebe sie hervor
+    currentDropZone = dropZone;
+    currentDropZone.classList.add("drag-over");
+    updateDebugInfo(`DragEnter auf Drop-Zone: ${dropZone.getAttribute("data-couple-index")}`);
+  }
+}
+
+   function handleDragLeave(e) {
+  e.preventDefault();
+  const dropZone = e.target.closest(".drop-zone");
+
+  // Entferne die Hervorhebung nur, wenn es die aktuelle Drop-Zone ist
+  if (dropZone && dropZone === currentDropZone) {
+    dropZone.classList.remove("drag-over");
+    currentDropZone = null;
+    updateDebugInfo(`DragLeave von Drop-Zone: ${dropZone.getAttribute("data-couple-index")}`);
+  }
+}
 
       function handleDragOver(e) {
         e.preventDefault();
